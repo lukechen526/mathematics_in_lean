@@ -53,13 +53,13 @@ theorem neg_add_cancel_left (a b : R) : -a + (a + b) = b := by
 
 -- Prove these:
 theorem add_neg_cancel_right (a b : R) : a + b + -b = a := by
-  sorry
+  rw [add_assoc, add_right_neg, add_zero]
 
 theorem add_left_cancel {a b c : R} (h : a + b = a + c) : b = c := by
-  sorry
+  rw [← zero_add b, ← add_left_neg a, add_assoc, h, ← add_assoc, add_left_neg, zero_add]
 
 theorem add_right_cancel {a b c : R} (h : a + b = c + b) : a = c := by
-  sorry
+  rw [← add_zero a, ← add_right_neg b, ← add_assoc,h, add_assoc, add_right_neg, add_zero]
 
 theorem mul_zero (a : R) : a * 0 = 0 := by
   have h : a * 0 + a * 0 = a * 0 + 0 := by
@@ -67,20 +67,25 @@ theorem mul_zero (a : R) : a * 0 = 0 := by
   rw [add_left_cancel h]
 
 theorem zero_mul (a : R) : 0 * a = 0 := by
-  sorry
+  have h' :  0 * a + 0 * a = 0 * a + 0 := by
+    rw [← add_mul, zero_add]
+    nth_rewrite 1 [← add_zero (0 * a)]
+    ring
+  rw [add_left_cancel h']
 
 theorem neg_eq_of_add_eq_zero {a b : R} (h : a + b = 0) : -a = b := by
-  sorry
+  rw [← add_zero (-a), ← h, ← add_assoc, add_left_neg, zero_add]
 
 theorem eq_neg_of_add_eq_zero {a b : R} (h : a + b = 0) : a = -b := by
-  sorry
+  rw [← add_zero a, ← add_right_neg b, ← add_assoc, h, zero_add]
 
 theorem neg_zero : (-0 : R) = 0 := by
   apply neg_eq_of_add_eq_zero
   rw [add_zero]
 
 theorem neg_neg (a : R) : - -a = a := by
-  sorry
+  apply neg_eq_of_add_eq_zero
+  rw [add_left_neg]
 
 end MyRing
 
@@ -103,13 +108,14 @@ namespace MyRing
 variable {R : Type*} [Ring R]
 
 theorem self_sub (a : R) : a - a = 0 := by
-  sorry
+  rw [← add_right_neg a]
+  apply sub_eq_add_neg
 
 theorem one_add_one_eq_two : 1 + 1 = (2 : R) := by
   norm_num
 
 theorem two_mul (a : R) : 2 * a = a + a := by
-  sorry
+  rw [← one_add_one_eq_two, add_mul, one_mul]
 
 end MyRing
 
@@ -131,8 +137,13 @@ variable {G : Type*} [Group G]
 
 namespace MyGroup
 
+theorem inv_inv (a : G) : (a⁻¹)⁻¹ = a := by
+  nth_rewrite 2 [← one_mul a]
+  nth_rewrite 2 [← mul_left_inv a]
+
 theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by
-  sorry
+  rw [← mul_left_inv a⁻¹, inv_inv]
+
 
 theorem mul_one (a : G) : a * 1 = a := by
   sorry
@@ -143,4 +154,3 @@ theorem mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
 end MyGroup
 
 end
-
