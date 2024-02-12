@@ -36,30 +36,46 @@ variable (x y z : α)
 #check (sup_le : x ≤ z → y ≤ z → x ⊔ y ≤ z)
 
 example : x ⊓ y = y ⊓ x := by
-  sorry
+  apply le_antisymm
+  repeat
+    apply le_inf
+    · apply inf_le_right
+    apply inf_le_left
 
 example : x ⊓ y ⊓ z = x ⊓ (y ⊓ z) := by
   sorry
 
 example : x ⊔ y = y ⊔ x := by
-  sorry
+  apply le_antisymm
+  repeat
+    apply sup_le
+    · apply le_sup_right
+    apply le_sup_left
+
 
 example : x ⊔ y ⊔ z = x ⊔ (y ⊔ z) := by
   sorry
 
 theorem absorb1 : x ⊓ (x ⊔ y) = x := by
-  sorry
+  apply le_antisymm
+  · apply inf_le_left
+  apply le_inf
+  · apply le_refl
+  apply le_sup_left
 
 theorem absorb2 : x ⊔ x ⊓ y = x := by
-  sorry
-
+  apply le_antisymm
+  · apply sup_le
+    · apply le_refl
+    apply inf_le_left
+  apply le_sup_left
 end
 
 section
 variable {α : Type*} [DistribLattice α]
 variable (x y z : α)
 
-#check (inf_sup_left : x ⊓ (y ⊔ z) = x ⊓ y ⊔ x ⊓ z)
+#check (inf_sup_left : x ⊓ (y ⊔ z) = x ⊓ y ⊔ x ⊓+ z)
 #check (inf_sup_right : (x ⊔ y) ⊓ z = x ⊓ z ⊔ y ⊓ z)
 #check (sup_inf_left : x ⊔ y ⊓ z = (x ⊔ y) ⊓ (x ⊔ z))
 #check (sup_inf_right : x ⊓ y ⊔ z = (x ⊔ z) ⊓ (y ⊔ z))
@@ -106,7 +122,9 @@ variable (x y z : X)
 #check (dist_triangle x y z : dist x z ≤ dist x y + dist y z)
 
 example (x y : X) : 0 ≤ dist x y := by
-  sorry
-
+  have : 0 ≤ dist x y + dist y x := by
+    rw [← dist_self x]
+    apply dist_triangle
+  rw [dist_comm y x] at this
+  linarith
 end
-
